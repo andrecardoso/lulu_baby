@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lulu_baby/baby_icons.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:lulu_baby/repository/user_repository.dart';
 
 void main() {
-  // Set `enableInDevMode` to true to see reports while in debug mode
-  // This is only to be used for confirming that reports are being
-  // submitted as expected. It is not intended to be used for everyday
-  // development.
-  Crashlytics.instance.enableInDevMode = true;
-
   // Pass all uncaught errors from the framework to Crashlytics.
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
@@ -32,7 +28,9 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       navigatorObservers: <NavigatorObserver>[observer],
-      home: MyHomePage(title: 'Lulu'),
+      home: MyHomePage(
+        title: 'Lulu',
+      ),
     );
   }
 }
@@ -41,6 +39,7 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   final String title;
+//  final UserRepository userRepository;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -66,7 +65,12 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           RaisedButton(
-            onPressed: () => {},
+            onPressed: () {
+              UserRepository userRepository =
+                  FirebaseUserRepository(FirebaseAuth.instance);
+              userRepository.login().then((value) => print(value),
+                  onError: (error) => print(error));
+            },
             child: Icon(BabyIcons.diaper),
           ),
           RaisedButton(
